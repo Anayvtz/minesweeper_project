@@ -1,6 +1,6 @@
 
 // imports
-import { board, winningBoard } from "./board.js";
+import { board, winningBoard, rebuildBoards } from "./board.js";
 import { stopTimer, restartTimer } from "./timer.js";
 import { insertToLocalStorage, loadFromStorage } from "./storage.js";
 
@@ -59,16 +59,22 @@ function handleBombImg(boardItem, btn) {
     img.alt = "bomb";
     img.style.display = "block";
     btn.appendChild(img);
+    let status = document.getElementById("status");
+    status.innerHTML = "Bomer! you lost";
     return true;
 }
 function checkWin() {
-    playingTable.forEach((row, index) => {
-        row.forEach((cell, ix) => {
-            if (cell != winningBoard[index][ix]) {
+    for (let i = 0; i < playingTable.length; i++) {
+        for (let j = 0; j < playingTable[0].length; j++) {
+            if (playingTable[i][j] != winningBoard[i][j]) {
                 return false;
             }
-        });
-    });
+        }
+    }
+
+    let status = document.getElementById("status");
+    status.innerHTML = " Congratulations, you win!";
+    return true;
 }
 
 
@@ -78,11 +84,23 @@ function stopGame() {
     stopTimer();
     insertToLocalStorage();
 }
+
+function resetPlayingTable() {
+    for (let i = 0; i < playingTable.length; i++) {
+        for (let j = 0; j < playingTable[0].length; j++) {
+            playingTable[i][j] = 0;
+        }
+    }
+}
 function restartGame() {
+    resetPlayingTable();
+    rebuildBoards();
     let cells = document.querySelectorAll(".cell");
     cells.forEach(item => {
         item.innerHTML = "";
         item.disabled = false;
     });
+    let status = document.getElementById("status");
+    status.innerHTML = "game status apperas here";
     restartTimer();
 }
